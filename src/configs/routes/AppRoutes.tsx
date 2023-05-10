@@ -1,17 +1,15 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Layout from '../Layout'
 
-import Welcome from '../../pages/Welcome';
 import { Login } from '../../pages/Login';
+import Layout from '../Layout';
 
 const AppRoutes: React.FC = () => {
 	return (
 		<Layout>
 			<BrowserRouter>
 				<Routes>
-					<Route path="/" element={<Welcome />} />
-					<Route path="/login" element={<Login />} />
+					<Route path="/" element={<Login />} />
 				</Routes>
 			</BrowserRouter>
 		</Layout>
