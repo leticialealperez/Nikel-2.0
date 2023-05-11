@@ -46,7 +46,7 @@ export const Login = () => {
 					}}
 					gap={2}
 				>
-					<LoginImage src={nikelLogo} />
+					<LoginImage src={nikelLogo} margin="16px" />
 					<FormLogin />
 
 					<LoginImage src={codaiLogo} />
