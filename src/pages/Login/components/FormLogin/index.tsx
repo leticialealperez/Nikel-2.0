@@ -34,7 +34,15 @@ export const FormLogin = () => {
 
 	useEffect(() => {
 		const users = JSON.parse(localStorage.getItem('users') ?? '[]')
+		setUsers(users)
 		localStorage.setItem('users', JSON.stringify(users))
+
+		const logged = localStorage.getItem('isLogged')
+
+		if (JSON.parse(logged!)) {
+			navigate('/home')
+		}
+
 	}, [])
 	
 	const loggedUser = (event: React.SyntheticEvent<Element, Event>, checked: boolean) => {
@@ -42,6 +50,12 @@ export const FormLogin = () => {
 			setIsLogged(true)
 		} else {
 			setIsLogged(false)
+		}
+	}
+
+	const persistLog = () => {
+		if (isLogged) {
+			localStorage.setItem('isLogged', JSON.stringify(true))
 		}
 	}
 
@@ -76,14 +90,15 @@ export const FormLogin = () => {
 		const user: UserProps = {
 			id: (Math.random() * 10).toString(),
 			email: email,
-			password: password
+			password: password,
 		}
 
 		if (emailIsValid && passwordIsValid) {
 			users.push(user)
 			localStorage.setItem('users', JSON.stringify(users))
+			persistLog()
 
-			// navigate('/home')
+			navigate('/home')
 		}
 	}
 
