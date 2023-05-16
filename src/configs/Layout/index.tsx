@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 
-import { background } from '../constants/colors';
+import { background } from '../../utils/constants/colors';
 
 interface LayoutProps {
 	children: React.ReactNode;
