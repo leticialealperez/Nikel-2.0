@@ -1,6 +1,5 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import userLoggedSlice from './userLogged/userLoggedSlice';
 import usersSlice from './Users/usersSlice';
 
 const rootReducer = combineReducers({
@@ -8,7 +7,6 @@ const rootReducer = combineReducers({
 	// propriedade - nome na store
 	// valor - reducer/manager deste estado global
 	users: usersSlice,
-	userLogged: userLoggedSlice,
 });
 
 export default rootReducer;

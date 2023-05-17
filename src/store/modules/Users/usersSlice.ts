@@ -8,11 +8,7 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
-
-interface User {
-	email: string;
-	senha: string;
-}
+import { User } from '../../types/User';
 
 const usersAdapter = createEntityAdapter<User>({
 	selectId: (estado) => estado.email,

@@ -8,7 +8,7 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface UserProps {
@@ -18,11 +18,7 @@ interface UserProps {
 }
 
 import { SnackBarComp } from '../../../../shared-components/SnackBar';
-import {
-	emailValidator,
-	passwordValidator,
-} from '../../../../utils/validators/Inputs';
-import AlertDialog from '../ModalSignUpUser';
+import ModalSignupUser from '../ModalSignUpUser';
 
 export const FormLogin = () => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -37,18 +33,6 @@ export const FormLogin = () => {
 	const [users, setUsers] = useState<any>([]);
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		const users = JSON.parse(localStorage.getItem('users') ?? '[]');
-		setUsers(users);
-		localStorage.setItem('users', JSON.stringify(users));
-
-		const logged = localStorage.getItem('isLogged');
-
-		if (JSON.parse(logged!)) {
-			navigate('/home');
-		}
-	}, [navigate]);
-
 	const loggedUser = (
 		event: React.SyntheticEvent<Element, Event>,
 		checked: boolean,
@@ -57,12 +41,6 @@ export const FormLogin = () => {
 			setIsLogged(true);
 		} else {
 			setIsLogged(false);
-		}
-	};
-
-	const persistLog = () => {
-		if (isLogged) {
-			localStorage.setItem('isLogged', JSON.stringify(true));
 		}
 	};
 
@@ -80,6 +58,7 @@ export const FormLogin = () => {
 		}
 	};
 
+	// função que controla o fechamento do snackbar
 	const handleClose = (
 		event: React.SyntheticEvent | Event,
 		reason?: string,
@@ -91,27 +70,7 @@ export const FormLogin = () => {
 		setIsError(false);
 	};
 
-	const save = () => {
-		const emailIsValid = emailValidator(email);
-		const passwordIsValid = passwordValidator(password);
-
-		verifySnack(emailIsValid, passwordIsValid);
-
-		const user: UserProps = {
-			id: (Math.random() * 10).toString(),
-			email: email,
-			password: password,
-		};
-
-		if (emailIsValid && passwordIsValid) {
-			users.push(user);
-			localStorage.setItem('users', JSON.stringify(users));
-			persistLog();
-
-			navigate('/home');
-		}
-	};
-
+	// função que controla a abertura do Modal - dispara ao clique do link de cadastrar conta
 	const handleClickOpen = () => {
 		setIsOpen(true);
 	};
@@ -123,7 +82,6 @@ export const FormLogin = () => {
 				sx={{ maxWidth: '80%' }}
 				onSubmit={(event) => {
 					event.preventDefault();
-					save();
 				}}
 			>
 				<Grid container spacing={2}>
@@ -197,7 +155,7 @@ export const FormLogin = () => {
 					isError={isError}
 				/>
 			</Box>
-			<AlertDialog aberto={isOpen} mudarAberto={setIsOpen} />
+			<ModalSignupUser aberto={isOpen} mudarAberto={setIsOpen} />
 		</>
 	);
 };

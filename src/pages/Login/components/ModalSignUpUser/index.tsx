@@ -5,28 +5,93 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useAppDispatch } from '../../../../store/hooks';
 import { adicionarUsuario } from '../../../../store/modules/Users/usersSlice';
+import { emailRegex } from '../../../../utils/validators/regexData';
+import { IsValidCredentials } from '../../types/IsValidCredentials';
 
-interface AlertDialogProps {
+interface ModalSignupUserProps {
 	aberto: boolean;
 	mudarAberto: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AlertDialog: React.FC<AlertDialogProps> = ({ aberto, mudarAberto }) => {
+const ModalSignupUser: React.FC<ModalSignupUserProps> = ({
+	aberto,
+	mudarAberto,
+}) => {
 	const [emailCadastro, setEmailCadastro] = useState<string>('');
+	const [errorEmail, setErrorEmail] = useState<IsValidCredentials>({
+		helperText: '',
+		isValid: true,
+	});
 	const [senhaCadastro, setSenhaCadastro] = useState<string>('');
+	const [errorSenha, setErrorSenha] = useState<IsValidCredentials>({
+		helperText: '',
+		isValid: true,
+	});
 
+	// constroi um disparador de ações para modificar os dados da store
 	const dispatch = useAppDispatch();
 
+	// executa a callback sempre que o valor do estado é alterado
+	useEffect(() => {
+		if (emailCadastro.length && !emailRegex.test(emailCadastro)) {
+			setErrorEmail({
+				helperText: 'Informe um e-mail válido.',
+				isValid: false,
+			});
+		} else {
+			setErrorEmail({
+				helperText: 'Utilize seu e-mail para criar uma conta.',
+				isValid: true,
+			});
+		}
+	}, [emailCadastro]);
+
+	// executa a callback sempre que o valor do estado é alterado
+	useEffect(() => {
+		if (senhaCadastro.length && senhaCadastro.length < 6) {
+			setErrorSenha({
+				helperText: 'Cadastre uma senha com no mínimo 6 caracteres.',
+				isValid: false,
+			});
+		} else {
+			setErrorSenha({
+				helperText:
+					'Utilize uma senha fácil de lembrar e anote para não esquecer.',
+				isValid: true,
+			});
+		}
+	}, [senhaCadastro]);
+
+	// lógica para fechar o modal - executa ao clique do botão
 	const handleClose = () => {
 		mudarAberto(false);
 	};
 
-	const aviso = () => {
-		alert('Executou!');
+	const handleSignupUser = (ev: React.FormEvent<HTMLFormElement>) => {
+		ev.preventDefault();
+
+		if (!ev.currentTarget.checkValidity()) {
+			return;
+		}
+
+		// cadastrar um usuario no ESTADO GLOBAL
+		dispatch(
+			adicionarUsuario({
+				email: emailCadastro,
+				senha: senhaCadastro,
+			}),
+		);
+
+		// limpar os campos de input
+		setEmailCadastro('');
+		setSenhaCadastro('');
+
+		// fechar o modal
+		handleClose();
 	};
 
 	return (
@@ -54,48 +119,34 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ aberto, mudarAberto }) => {
 			</DialogTitle>
 
 			<Divider />
-			<Box
-				component="form"
-				marginTop={3}
-				onSubmit={(ev) => {
-					ev.preventDefault();
-					// cadastrar um usuario - ESTADO GLOBAL
-					dispatch(
-						adicionarUsuario({
-							email: emailCadastro,
-							senha: senhaCadastro,
-						}),
-					);
-					// limpar os campos de input
-					setEmailCadastro('');
-					setSenhaCadastro('');
-
-					// fechar o modal
-					handleClose();
-				}}
-			>
-				<DialogContent>
+			<Box component="form" onSubmit={handleSignupUser}>
+				<DialogContent sx={{ marginY: 2 }}>
 					<Grid container spacing={2}>
 						<Grid item xs={12}>
 							<TextField
 								label="E-mail"
-								helperText="Utilize seu e-mail para criar uma conta."
+								error={!errorEmail.isValid}
+								helperText={errorEmail.helperText}
 								fullWidth
 								onChange={(event) => {
 									setEmailCadastro(event.currentTarget.value);
 								}}
+								required
 								value={emailCadastro}
 							/>
 						</Grid>
 						<Grid item xs={12}>
 							<TextField
 								label="Senha"
+								error={!errorSenha.isValid}
+								helperText={errorSenha.helperText}
 								fullWidth
-								helperText="Utilize uma senha fácil de lembrar e anote para não esquecer."
 								type="password"
 								onChange={(event) => {
 									setSenhaCadastro(event.currentTarget.value);
 								}}
+								required
+								inputProps={{ minLength: 6 }}
 								value={senhaCadastro}
 							/>
 						</Grid>
@@ -113,9 +164,13 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ aberto, mudarAberto }) => {
 					</Button>
 					<Button
 						type="submit"
-						onClick={handleClose}
 						autoFocus
 						variant="contained"
+						sx={{
+							'&:hover': {
+								backgroundColor: '#4c79c3',
+							},
+						}}
 					>
 						Cadastrar
 					</Button>
@@ -125,4 +180,4 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ aberto, mudarAberto }) => {
 	);
 };
 
-export default AlertDialog;
+export default ModalSignupUser;

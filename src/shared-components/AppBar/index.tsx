@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import { useNavigate } from 'react-router-dom';
 
-import NikelSmall from '../../../public/assets/images/nikel-small-logo.png';
+import NikelSmall from '/assets/images/nikel-small-logo.png';
 
 interface MyAppBarProps {
 	context: 'home' | 'transactions';

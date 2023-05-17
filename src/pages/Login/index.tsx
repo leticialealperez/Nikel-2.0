@@ -1,13 +1,14 @@
 import { Container, Grid } from '@mui/material';
 
-import codaiLogo from '../../../public/assets/images/codai-logo.png';
-import growdevLogo from '../../../public/assets/images/growdev-logo.png';
-import nikelLogo from '../../../public/assets/images/nikel-logo.png';
-import pocket from '../../../public/assets/images/pocket.png';
 import { FormLogin } from './components/FormLogin';
 import { LoginImage } from './components/LoginImage';
 import LoginPhrases from './components/LoginPhrases';
 import { PhrasesProps } from './types/PhrasesProps';
+
+import codaiLogo from '/assets/images/codai-logo.png';
+import growdevLogo from '/assets/images/growdev-logo.png';
+import nikelLogo from '/assets/images/nikel-logo.png';
+import pocket from '/assets/images/pocket.png';
 
 export const Login = () => {
 	const phrases: PhrasesProps[] = [
