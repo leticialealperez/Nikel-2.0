@@ -14,7 +14,7 @@ const usersAdapter = createEntityAdapter<User>({
 	selectId: (estado) => estado.email,
 });
 
-export const { selectAll } = usersAdapter.getSelectors(
+export const { selectAll: buscarUsuarios } = usersAdapter.getSelectors(
 	(global: RootState) => global.users,
 );
 

@@ -8,7 +8,7 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface UserProps {
@@ -18,6 +18,10 @@ interface UserProps {
 }
 
 import { SnackBarComp } from '../../../../shared-components/SnackBar';
+import { useAppSelector } from '../../../../store/hooks';
+import { buscarUsuarios } from '../../../../store/modules/Users/usersSlice';
+import { emailRegex } from '../../../../utils/validators/regexData';
+import { IsValidCredentials } from '../../types/IsValidCredentials';
 import ModalSignupUser from '../ModalSignUpUser';
 
 export const FormLogin = () => {
@@ -26,12 +30,43 @@ export const FormLogin = () => {
 	const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState('');
 	const [isLogged, setIsLogged] = useState<boolean>(false);
+	const [emailIsValid, setEmailIsValid] = useState<IsValidCredentials>({
+		helperText: '',
+		isValid: false,
+	});
 
 	const [isError, setIsError] = useState<boolean>(false);
 	const [message, setMessage] = useState<string>('');
 
+	// useAppSelector - buscar uma determinada propriedade/estado Global
+
 	const [users, setUsers] = useState<any>([]);
 	const navigate = useNavigate();
+	const select = useAppSelector(buscarUsuarios);
+
+	useEffect(() => {
+		if (email.length && !emailRegex.test(email)) {
+			setEmailIsValid({
+				helperText: 'Email inválido',
+				isValid: false,
+			});
+			return;
+		}
+
+		setEmailIsValid({
+			helperText: 'Utilize seu e-mail para realizar o login.',
+			isValid: true,
+		});
+	}, [email]);
+
+	useEffect(() => {
+		if (
+			localStorage.getItem('userLogged') ||
+			sessionStorage.getItem('userLogged')
+		) {
+			navigate('/home');
+		}
+	}, [navigate]);
 
 	const loggedUser = (
 		event: React.SyntheticEvent<Element, Event>,
@@ -75,6 +110,25 @@ export const FormLogin = () => {
 		setIsOpen(true);
 	};
 
+	const verifyUserExists = () => {
+		const user = select.find((user) => {
+			return user.email === email && user.senha === password;
+		});
+
+		if (!user) {
+			alert('Alguma coisa está errada');
+			return;
+		}
+
+		if (!isLogged) {
+			sessionStorage.setItem('userLogged', user.email);
+			return;
+		}
+
+		localStorage.setItem('userLogged', user.email);
+		navigate('/home');
+	};
+
 	return (
 		<>
 			<Box
@@ -82,14 +136,16 @@ export const FormLogin = () => {
 				sx={{ maxWidth: '80%' }}
 				onSubmit={(event) => {
 					event.preventDefault();
+					verifyUserExists();
 				}}
 			>
 				<Grid container spacing={2}>
 					<Grid item xs={12}>
 						<TextField
 							label="E-mail"
-							helperText="Utilize seu e-mail para realizar o login."
+							helperText={emailIsValid.helperText}
 							fullWidth
+							error={!emailIsValid.isValid}
 							onChange={(event) => {
 								setEmail(event.currentTarget.value);
 							}}
