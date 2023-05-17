@@ -21,12 +21,15 @@ const ModalSignupUser: React.FC<ModalSignupUserProps> = ({
 	aberto,
 	mudarAberto,
 }) => {
+	// estados criados para controlar o que é digitado nos inputs
 	const [emailCadastro, setEmailCadastro] = useState<string>('');
+	const [senhaCadastro, setSenhaCadastro] = useState<string>('');
+
+	// estados criados para validação do que contem nos estados acima
 	const [errorEmail, setErrorEmail] = useState<IsValidCredentials>({
 		helperText: '',
 		isValid: true,
 	});
-	const [senhaCadastro, setSenhaCadastro] = useState<string>('');
 	const [errorSenha, setErrorSenha] = useState<IsValidCredentials>({
 		helperText: '',
 		isValid: true,
@@ -125,6 +128,7 @@ const ModalSignupUser: React.FC<ModalSignupUserProps> = ({
 						<Grid item xs={12}>
 							<TextField
 								label="E-mail"
+								type="email"
 								error={!errorEmail.isValid}
 								helperText={errorEmail.helperText}
 								fullWidth
@@ -163,6 +167,7 @@ const ModalSignupUser: React.FC<ModalSignupUserProps> = ({
 						Cancelar
 					</Button>
 					<Button
+						disabled={!errorEmail.isValid || !errorSenha.isValid}
 						type="submit"
 						autoFocus
 						variant="contained"
