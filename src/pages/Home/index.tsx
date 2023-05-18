@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import MyAppBar from '../../shared-components/AppBar';
+import Card from '../../shared-components/CardTransactions';
 import { Section } from '../../shared-components/Section';
 
 const Home = () => {
@@ -29,6 +30,7 @@ const Home = () => {
 				}}
 			>
 				<Section context="home" />
+				<Card />
 			</Box>
 		</>
 	);
