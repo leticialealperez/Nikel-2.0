@@ -1,9 +1,16 @@
-import { AccountCircle, Home, MonetizationOn } from '@mui/icons-material';
+import { Home, Logout, MonetizationOn } from '@mui/icons-material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import { useNavigate } from 'react-router-dom';
+
+import { useAppDispatch } from '../../store/hooks';
+import {
+	hideLoading,
+	showLoading,
+} from '../../store/modules/Loading/loadingSlice';
+import Loading from '../Loading';
 
 import NikelSmall from '/assets/images/nikel-small-logo.png';
 
@@ -13,6 +20,18 @@ interface MyAppBarProps {
 
 const MyAppBar: React.FC<MyAppBarProps> = ({ context }) => {
 	const navigate = useNavigate();
+
+	const dispatch = useAppDispatch();
+	const logout = () => {
+		localStorage.removeItem('userLogged');
+		sessionStorage.removeItem('userLogged');
+
+		dispatch(showLoading());
+		setTimeout(() => {
+			dispatch(hideLoading());
+			navigate('/');
+		}, 3000);
+	};
 
 	return (
 		<Box sx={{ flexGrow: 1 }}>
@@ -54,12 +73,13 @@ const MyAppBar: React.FC<MyAppBarProps> = ({ context }) => {
 								fontSize="large"
 							/>
 						</IconButton>
-						<IconButton>
-							<AccountCircle color="secondary" fontSize="large" />
+						<IconButton onClick={logout}>
+							<Logout fontSize="large" color="secondary" />
 						</IconButton>
 					</Box>
 				</Toolbar>
 			</AppBar>
+			<Loading />
 		</Box>
 	);
 };

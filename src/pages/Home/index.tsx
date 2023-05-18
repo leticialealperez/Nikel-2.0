@@ -1,9 +1,22 @@
 import { Box } from '@mui/material';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import MyAppBar from '../../shared-components/AppBar';
 import { Section } from '../../shared-components/Section';
 
 const Home = () => {
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (
+			!localStorage.getItem('userLogged') &&
+			!sessionStorage.getItem('userLogged')
+		) {
+			navigate('/');
+		}
+	}, [navigate]);
+
 	return (
 		<>
 			<MyAppBar context="home" />

@@ -17,8 +17,13 @@ interface UserProps {
 	password: string;
 }
 
+import Loading from '../../../../shared-components/Loading';
 import { SnackBarComp } from '../../../../shared-components/SnackBar';
-import { useAppSelector } from '../../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import {
+	hideLoading,
+	showLoading,
+} from '../../../../store/modules/Loading/loadingSlice';
 import { buscarUsuarios } from '../../../../store/modules/Users/usersSlice';
 import { emailRegex } from '../../../../utils/validators/regexData';
 import { IsValidCredentials } from '../../types/IsValidCredentials';
@@ -43,6 +48,7 @@ export const FormLogin = () => {
 	const [users, setUsers] = useState<any>([]);
 	const navigate = useNavigate();
 	const select = useAppSelector(buscarUsuarios);
+	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		if (email.length && !emailRegex.test(email)) {
@@ -126,7 +132,12 @@ export const FormLogin = () => {
 		}
 
 		localStorage.setItem('userLogged', user.email);
-		navigate('/home');
+
+		dispatch(showLoading());
+		setTimeout(() => {
+			dispatch(hideLoading());
+			navigate('/home');
+		}, 3000);
 	};
 
 	return (
@@ -211,7 +222,9 @@ export const FormLogin = () => {
 					isError={isError}
 				/>
 			</Box>
+
 			<ModalSignupUser aberto={isOpen} mudarAberto={setIsOpen} />
+			<Loading />
 		</>
 	);
 };
