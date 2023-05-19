@@ -1,6 +1,7 @@
 import { Grid, Paper } from '@mui/material';
 
 import ColumnTransaction from '../ColumnTransaction';
+import { ModalTransaction } from '../ModalTransactions';
 
 const Card = () => {
 	return (
@@ -21,6 +22,7 @@ const Card = () => {
 					</Paper>
 				</Grid>
 			</Grid>
+			<ModalTransaction contexto="create" />
 		</>
 	);
 };

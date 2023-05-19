@@ -1,6 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
 import loadingSlice from './Loading/loadingSlice';
+import modalSlice from './ModalTransaction/';
 import usersSlice from './Users/usersSlice';
 
 const rootReducer = combineReducers({
@@ -9,6 +10,7 @@ const rootReducer = combineReducers({
 	// valor - reducer/manager deste estado global
 	users: usersSlice,
 	loading: loadingSlice,
+	modal: modalSlice,
 });
 
 export default rootReducer;
