@@ -45,7 +45,6 @@ export const FormLogin = () => {
 
 	// useAppSelector - buscar uma determinada propriedade/estado Global
 
-	const [users, setUsers] = useState<any>([]);
 	const navigate = useNavigate();
 	const select = useAppSelector(buscarUsuarios);
 	const dispatch = useAppDispatch();
@@ -78,11 +77,7 @@ export const FormLogin = () => {
 		event: React.SyntheticEvent<Element, Event>,
 		checked: boolean,
 	) => {
-		if (checked) {
-			setIsLogged(true);
-		} else {
-			setIsLogged(false);
-		}
+		setIsLogged(checked);
 	};
 
 	const verifySnack = (emailIsValid: boolean, passwordIsValid: boolean) => {
@@ -126,12 +121,9 @@ export const FormLogin = () => {
 			return;
 		}
 
-		if (!isLogged) {
-			sessionStorage.setItem('userLogged', user.email);
-			return;
-		}
-
-		localStorage.setItem('userLogged', user.email);
+		isLogged
+			? localStorage.setItem('userLogged', user.email)
+			: sessionStorage.setItem('userLogged', user.email);
 
 		dispatch(showLoading());
 		setTimeout(() => {
