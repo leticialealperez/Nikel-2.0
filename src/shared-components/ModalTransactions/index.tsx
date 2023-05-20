@@ -15,10 +15,34 @@ import {
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { hideModal } from '../../store/modules/ModalTransaction';
+import TransactionsModel from '../../store/types/Transactions';
 
-export const ModalTransaction: React.FC = () => {
+interface ModalTransactionsProps {
+	transactionSelected?: TransactionsModel;
+}
+
+export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
+	transactionSelected,
+}) => {
 	const select = useAppSelector((state) => state.modal);
 	const dispatch = useAppDispatch();
+	const handleConfirm = () => {
+		switch (select.context) {
+			case 'create':
+				// dispatch(createTransaction({}));
+				console.log('criar');
+				break;
+			case 'update':
+				// dispatch(updateTransaction({}));
+				console.log('atualizar');
+				break;
+			case 'delete':
+				// dispatch(deleteTransaction({}));
+				console.log('deletar');
+				break;
+			default:
+		}
+	};
 
 	return (
 		<Dialog
@@ -38,6 +62,7 @@ export const ModalTransaction: React.FC = () => {
 						<Grid item xs={12}>
 							<TextField
 								label="Valor"
+								value={transactionSelected?.value}
 								type="number"
 								InputProps={{
 									startAdornment: (
@@ -52,6 +77,7 @@ export const ModalTransaction: React.FC = () => {
 						<Grid item xs={12}>
 							<TextField
 								label="Descrição"
+								value={transactionSelected?.description}
 								type="text"
 								fullWidth
 							/>
@@ -62,6 +88,7 @@ export const ModalTransaction: React.FC = () => {
 									shrink: true,
 								}}
 								label="Data"
+								value={transactionSelected?.createdAt}
 								type="date"
 								fullWidth
 							/>
@@ -75,12 +102,17 @@ export const ModalTransaction: React.FC = () => {
 								<FormControlLabel
 									value="income"
 									control={<Radio />}
-									checked
+									checked={
+										transactionSelected?.type === 'income'
+									}
 									label="Entrada"
 								/>
 								<FormControlLabel
 									value="outcome"
 									control={<Radio />}
+									checked={
+										transactionSelected?.type === 'outcome'
+									}
 									label="Saída"
 								/>
 							</RadioGroup>
@@ -102,11 +134,7 @@ export const ModalTransaction: React.FC = () => {
 				>
 					Cancelar
 				</Button>
-				<Button
-					variant="contained"
-					onClick={() => alert('concluido')}
-					autoFocus
-				>
+				<Button variant="contained" onClick={handleConfirm} autoFocus>
 					Concluir
 				</Button>
 			</DialogActions>

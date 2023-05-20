@@ -2,6 +2,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 
 import loadingSlice from './Loading/loadingSlice';
 import modalSlice from './ModalTransaction/';
+import transactionsSlice from './Transactions/transactionsSlice';
 import usersSlice from './Users/usersSlice';
 
 const rootReducer = combineReducers({
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
 	users: usersSlice,
 	loading: loadingSlice,
 	modal: modalSlice,
+	transactions: transactionsSlice,
 });
 
 export default rootReducer;

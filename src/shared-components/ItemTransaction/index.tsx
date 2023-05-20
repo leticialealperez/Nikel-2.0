@@ -51,7 +51,7 @@ const ItemTransaction: React.FC<ItemTransactionProps> = ({ transaction }) => {
 					</Stack>
 				</Grid>
 			</Grid>
-			<ModalTransaction />
+			<ModalTransaction transactionSelected={transaction} />
 		</>
 	);
 };
