@@ -16,13 +16,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { hideModal } from '../../store/modules/ModalTransaction';
 
-interface ModalTransactionProps {
-	contexto: 'create' | 'update' | 'delete';
-}
-
-export const ModalTransaction: React.FC<ModalTransactionProps> = ({
-	contexto,
-}) => {
+export const ModalTransaction: React.FC = () => {
 	const select = useAppSelector((state) => state.modal);
 	const dispatch = useAppDispatch();
 
@@ -34,12 +28,12 @@ export const ModalTransaction: React.FC<ModalTransactionProps> = ({
 			aria-describedby="alert-dialog-description"
 		>
 			<DialogTitle id="alert-dialog-title">
-				{contexto === 'create' && 'Criar Transação'}
-				{contexto === 'update' && 'Editar Transação'}
-				{contexto === 'delete' && 'Deletar Transação'}
+				{select.context === 'create' && 'Criar Transação'}
+				{select.context === 'update' && 'Editar Transação'}
+				{select.context === 'delete' && 'Deletar Transação'}
 			</DialogTitle>
 			<DialogContent>
-				{contexto !== 'delete' && (
+				{select.context !== 'delete' && (
 					<Grid container spacing={3} marginTop={1}>
 						<Grid item xs={12}>
 							<TextField
@@ -94,7 +88,7 @@ export const ModalTransaction: React.FC<ModalTransactionProps> = ({
 					</Grid>
 				)}
 
-				{contexto === 'delete' && (
+				{select.context === 'delete' && (
 					<DialogContentText id="alert-dialog-description">
 						Tem certeza que deseja remover a transação, essa ação é
 						irreversível

@@ -1,24 +1,31 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface ModalProps {
 	open: boolean;
+	context: 'create' | 'update' | 'delete';
 }
 
 const initialState: ModalProps = {
-	open: true,
+	open: false,
+	context: 'create',
 };
 
 const modalSlice = createSlice({
 	name: 'modal',
 	initialState,
 	reducers: {
-		showModal: () => {
+		showModal: (
+			state,
+			action: PayloadAction<'create' | 'update' | 'delete'>,
+		) => {
 			return {
 				open: true,
+				context: action.payload,
 			};
 		},
-		hideModal: () => {
+		hideModal: (state) => {
 			return {
+				...state,
 				open: false,
 			};
 		},
