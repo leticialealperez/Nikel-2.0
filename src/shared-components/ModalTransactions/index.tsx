@@ -26,6 +26,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 }) => {
 	const select = useAppSelector((state) => state.modal);
 	const dispatch = useAppDispatch();
+
 	const handleConfirm = () => {
 		switch (select.context) {
 			case 'create':

@@ -2,7 +2,7 @@ import { Delete, Edit } from '@mui/icons-material';
 import { Grid, IconButton, Stack, Typography } from '@mui/material';
 import React from 'react';
 
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { showModal } from '../../store/modules/ModalTransaction';
 import TransactionsModel from '../../store/types/Transactions';
 import { ModalTransaction } from '../ModalTransactions';
@@ -12,6 +12,7 @@ interface ItemTransactionProps {
 }
 
 const ItemTransaction: React.FC<ItemTransactionProps> = ({ transaction }) => {
+	const modal = useAppSelector((state) => state.modal);
 	const dispatch = useAppDispatch();
 
 	return (
@@ -51,7 +52,9 @@ const ItemTransaction: React.FC<ItemTransactionProps> = ({ transaction }) => {
 					</Stack>
 				</Grid>
 			</Grid>
-			<ModalTransaction transactionSelected={transaction} />
+			{modal.context !== 'update' && (
+				<ModalTransaction transactionSelected={transaction} />
+			)}
 		</>
 	);
 };

@@ -1,12 +1,13 @@
 import { Add } from '@mui/icons-material';
 import { Fab, Grid, Paper } from '@mui/material';
 
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { showModal } from '../../store/modules/ModalTransaction';
 import ColumnTransaction from '../ColumnTransaction';
 import { ModalTransaction } from '../ModalTransactions';
 
 const Card = () => {
+	const modal = useAppSelector((state) => state.modal);
 	const dispatch = useAppDispatch();
 
 	return (
@@ -35,7 +36,7 @@ const Card = () => {
 			>
 				<Add />
 			</Fab>
-			<ModalTransaction />
+			{modal.context === 'create' && <ModalTransaction />}
 		</>
 	);
 };
