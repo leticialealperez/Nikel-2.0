@@ -52,7 +52,7 @@ const ItemTransaction: React.FC<ItemTransactionProps> = ({ transaction }) => {
 					</Stack>
 				</Grid>
 			</Grid>
-			{modal.context !== 'update' && (
+			{modal.context !== 'create' && (
 				<ModalTransaction transactionSelected={transaction} />
 			)}
 		</>
