@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import {
 	Button,
 	Dialog,
@@ -12,10 +13,12 @@ import {
 	RadioGroup,
 	TextField,
 } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import { v4 as gerarId } from 'uuid';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { hideModal } from '../../store/modules/ModalTransaction';
+import { createTransaction } from '../../store/modules/Transactions/transactionsSlice';
 import TransactionsModel from '../../store/types/Transactions';
 
 interface ModalTransactionsProps {
@@ -28,12 +31,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 	const [valor, setValor] = useState('');
 	const [desc, setDesc] = useState('');
 	const [data, setData] = useState('');
-
-	const radioGroupRef = useRef<HTMLDivElement | null>(null);
-
-	const test = () => {
-		console.log(radioGroupRef.current);
-	};
+	const [tipo, setTipo] = useState('income');
 
 	const select = useAppSelector((state) => state.modal);
 	const dispatch = useAppDispatch();
@@ -41,9 +39,22 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 	const handleConfirm = () => {
 		switch (select.context) {
 			case 'create':
-				// dispatch(createTransaction({}));
+				const newTransaction: TransactionsModel = {
+					id: gerarId(),
+					value: Number(valor),
+					createdAt: data,
+					description: desc,
+					type: tipo as 'income' | 'outcome',
+					createdBy: (sessionStorage.getItem('userLogged') ??
+						localStorage.getItem('userLogged')) as string,
+				};
+
+				dispatch(createTransaction(newTransaction));
+				clearInputs();
+				dispatch(hideModal());
 				console.log('criar');
 				break;
+
 			case 'update':
 				// dispatch(updateTransaction({}));
 				console.log('atualizar');
@@ -54,6 +65,13 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 				break;
 			default:
 		}
+	};
+
+	const clearInputs = () => {
+		setValor('');
+		setDesc('');
+		setData('');
+		setTipo('income');
 	};
 
 	return (
@@ -113,23 +131,21 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 								row
 								aria-labelledby="demo-row-radio-buttons-group-label"
 								name="row-radio-buttons-group"
-								ref={radioGroupRef}
+								value={tipo}
+								onChange={(e) =>
+									setTipo(
+										(e.target as HTMLInputElement).value,
+									)
+								}
 							>
 								<FormControlLabel
 									value="income"
 									control={<Radio />}
-									checked={
-										transactionSelected?.type === 'income'
-									}
 									label="Entrada"
-									onChange={() => test()}
 								/>
 								<FormControlLabel
 									value="outcome"
 									control={<Radio />}
-									checked={
-										transactionSelected?.type === 'outcome'
-									}
 									label="Saída"
 								/>
 							</RadioGroup>

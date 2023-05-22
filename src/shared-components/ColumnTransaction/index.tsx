@@ -1,75 +1,18 @@
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
 import { Divider, Grid, Typography } from '@mui/material';
 import React from 'react';
-import { v4 as generateId } from 'uuid';
 
-import TransactionsModel from '../../store/types/Transactions';
+import { useAppSelector } from '../../store/hooks';
+import { listAllTransactions } from '../../store/modules/Transactions/transactionsSlice';
 import ItemTransaction from '../ItemTransaction';
 
 interface ColumnTransactionProps {
 	type: 'income' | 'outcome';
 }
 
-const listaDeTransacoes: TransactionsModel[] = [
-	{
-		id: generateId(),
-		type: 'income',
-		value: 50000,
-		description: 'vale',
-		createdAt: '17/05/2024',
-		createdBy: 'Teste',
-	},
-	{
-		id: generateId(),
-		type: 'outcome',
-		value: 49500,
-		description: 'Boletos growdev',
-		createdAt: '18/05/2024',
-		createdBy: 'Teste',
-	},
-	{
-		id: generateId(),
-		type: 'income',
-		value: 50000,
-		description: 'vale',
-		createdAt: '18/05/2024',
-		createdBy: 'Teste',
-	},
-	{
-		id: generateId(),
-		type: 'income',
-		value: 50000,
-		description: 'vale',
-		createdAt: '17/05/2024',
-		createdBy: 'Teste',
-	},
-	{
-		id: generateId(),
-		type: 'income',
-		value: 50000,
-		description: 'vale',
-		createdAt: '17/05/2024',
-		createdBy: 'Teste',
-	},
-	{
-		id: generateId(),
-		type: 'income',
-		value: 50000,
-		description: 'vale',
-		createdAt: '17/05/2024',
-		createdBy: 'Teste',
-	},
-	{
-		id: generateId(),
-		type: 'income',
-		value: 50000,
-		description: 'vale',
-		createdAt: '17/05/2024',
-		createdBy: 'Teste',
-	},
-];
-
 const ColumnTransaction: React.FC<ColumnTransactionProps> = ({ type }) => {
+	const listaDeTransacoes = useAppSelector(listAllTransactions);
+
 	return (
 		<Grid item xs={6} padding={2}>
 			<Typography variant="h3">

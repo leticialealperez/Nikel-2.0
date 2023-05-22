@@ -1,8 +1,10 @@
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import PaidIcon from '@mui/icons-material/Paid';
 import { Box, Grid } from '@mui/material';
-import React from 'react';
+import React, { useMemo } from 'react';
 
+import { useAppSelector } from '../../store/hooks';
+import { listAllTransactions } from '../../store/modules/Transactions/transactionsSlice';
 import { SectionText } from '../SectionText';
 
 interface SectionProps {
@@ -10,6 +12,18 @@ interface SectionProps {
 }
 
 export const Section: React.FC<SectionProps> = ({ context }) => {
+	const select = useAppSelector(listAllTransactions);
+
+	const total = useMemo(() => {
+		return select.reduce((prev, curr) => {
+			if (curr.type === 'income') {
+				return prev + curr.value;
+			} else {
+				return prev - curr.value;
+			}
+		}, 0);
+	}, [select]);
+
 	return (
 		<Grid container>
 			<Grid
@@ -21,7 +35,7 @@ export const Section: React.FC<SectionProps> = ({ context }) => {
 			>
 				{context === 'home' && (
 					<SectionText
-						text="R$ 1.000,00"
+						text={`R$ ${total.toFixed(2)}`}
 						icon={<LocalAtmIcon color="primary" fontSize="large" />}
 					/>
 				)}
