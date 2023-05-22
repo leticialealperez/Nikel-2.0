@@ -12,6 +12,7 @@ import {
 	RadioGroup,
 	TextField,
 } from '@mui/material';
+import { useRef, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { hideModal } from '../../store/modules/ModalTransaction';
@@ -24,6 +25,16 @@ interface ModalTransactionsProps {
 export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 	transactionSelected,
 }) => {
+	const [valor, setValor] = useState('');
+	const [desc, setDesc] = useState('');
+	const [data, setData] = useState('');
+
+	const radioGroupRef = useRef<HTMLDivElement | null>(null);
+
+	const test = () => {
+		console.log(radioGroupRef.current);
+	};
+
 	const select = useAppSelector((state) => state.modal);
 	const dispatch = useAppDispatch();
 
@@ -63,7 +74,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 						<Grid item xs={12}>
 							<TextField
 								label="Valor"
-								value={transactionSelected?.value}
+								value={valor}
 								type="number"
 								InputProps={{
 									startAdornment: (
@@ -73,14 +84,16 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 									),
 								}}
 								fullWidth
+								onChange={(e) => setValor(e.target.value)}
 							/>
 						</Grid>
 						<Grid item xs={12}>
 							<TextField
 								label="Descrição"
-								value={transactionSelected?.description}
+								value={desc}
 								type="text"
 								fullWidth
+								onChange={(e) => setDesc(e.target.value)}
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -89,9 +102,10 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 									shrink: true,
 								}}
 								label="Data"
-								value={transactionSelected?.createdAt}
+								value={data}
 								type="date"
 								fullWidth
+								onChange={(e) => setData(e.target.value)}
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -99,6 +113,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 								row
 								aria-labelledby="demo-row-radio-buttons-group-label"
 								name="row-radio-buttons-group"
+								ref={radioGroupRef}
 							>
 								<FormControlLabel
 									value="income"
@@ -107,6 +122,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 										transactionSelected?.type === 'income'
 									}
 									label="Entrada"
+									onChange={() => test()}
 								/>
 								<FormControlLabel
 									value="outcome"
