@@ -1,6 +1,6 @@
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
 import { Divider, Grid, Typography } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { useAppSelector } from '../../store/hooks';
 import { listAllTransactions } from '../../store/modules/Transactions/transactionsSlice';
@@ -11,6 +11,11 @@ interface ColumnTransactionProps {
 }
 
 const ColumnTransaction: React.FC<ColumnTransactionProps> = ({ type }) => {
+	const [userLogged, setUserLogged] = useState(
+		(sessionStorage.getItem('userLogged') ??
+			localStorage.getItem('userLogged')) as string,
+	);
+
 	const listaDeTransacoes = useAppSelector(listAllTransactions);
 
 	return (
@@ -29,7 +34,11 @@ const ColumnTransaction: React.FC<ColumnTransactionProps> = ({ type }) => {
 			</Typography>
 			<Divider />
 			{listaDeTransacoes
-				.filter((transaction) => transaction.type === type)
+				.filter(
+					(transaction) =>
+						transaction.createdBy === userLogged &&
+						transaction.type === type,
+				)
 				.map((transaction, index) =>
 					index < 5 ? (
 						<ItemTransaction
