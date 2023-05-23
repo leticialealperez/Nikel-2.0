@@ -160,7 +160,9 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 								value={tipo}
 								onChange={(e) =>
 									setTipo(
-										(e.target as HTMLInputElement).value,
+										(e.target as HTMLInputElement).value as
+											| 'income'
+											| 'outcome',
 									)
 								}
 							>
