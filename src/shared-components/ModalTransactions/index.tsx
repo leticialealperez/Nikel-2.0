@@ -13,31 +13,43 @@ import {
 	RadioGroup,
 	TextField,
 } from '@mui/material';
-import { useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { v4 as gerarId } from 'uuid';
 
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { hideModal } from '../../store/modules/ModalTransaction';
-import { createTransaction } from '../../store/modules/Transactions/transactionsSlice';
+import { useAppDispatch } from '../../store/hooks';
+import {
+	createTransaction,
+	deleteTransaction,
+	updateTransaction,
+} from '../../store/modules/Transactions/transactionsSlice';
 import TransactionsModel from '../../store/types/Transactions';
 
 interface ModalTransactionsProps {
 	transactionSelected?: TransactionsModel;
+	context: 'create' | 'update' | 'delete';
+	open: boolean;
+	setOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 	transactionSelected,
+	context,
+	open,
+	setOpen,
 }) => {
-	const [valor, setValor] = useState('');
-	const [desc, setDesc] = useState('');
-	const [data, setData] = useState('');
-	const [tipo, setTipo] = useState('income');
+	const [valor, setValor] = useState(transactionSelected?.value ?? '');
+	const [desc, setDesc] = useState(transactionSelected?.description ?? '');
+	const [data, setData] = useState(transactionSelected?.createdAt ?? '');
+	const [tipo, setTipo] = useState(transactionSelected?.type ?? 'income');
 
-	const select = useAppSelector((state) => state.modal);
+	useEffect(() => {
+		console.log(transactionSelected);
+	}, [transactionSelected]);
+
 	const dispatch = useAppDispatch();
 
 	const handleConfirm = () => {
-		switch (select.context) {
+		switch (context) {
 			case 'create':
 				const newTransaction: TransactionsModel = {
 					id: gerarId(),
@@ -51,16 +63,30 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 
 				dispatch(createTransaction(newTransaction));
 				clearInputs();
-				dispatch(hideModal());
+				setOpen(false);
 				console.log('criar');
 				break;
 
 			case 'update':
-				// dispatch(updateTransaction({}));
-				console.log('atualizar');
+				if (transactionSelected) {
+					dispatch(
+						updateTransaction({
+							id: transactionSelected.id,
+							changes: {
+								value: +valor, //mágica === Number(x)
+								description: desc,
+								createdAt: data,
+								type: tipo,
+							},
+						}),
+					);
+				}
+
 				break;
 			case 'delete':
-				// dispatch(deleteTransaction({}));
+				if (transactionSelected) {
+					dispatch(deleteTransaction(transactionSelected.id));
+				}
 				console.log('deletar');
 				break;
 			default:
@@ -76,18 +102,18 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 
 	return (
 		<Dialog
-			open={select.open}
-			onClose={() => dispatch(hideModal())}
+			open={open}
+			onClose={() => setOpen(false)}
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
 			<DialogTitle id="alert-dialog-title">
-				{select.context === 'create' && 'Criar Transação'}
-				{select.context === 'update' && 'Editar Transação'}
-				{select.context === 'delete' && 'Deletar Transação'}
+				{context === 'create' && 'Criar Transação'}
+				{context === 'update' && 'Editar Transação'}
+				{context === 'delete' && 'Deletar Transação'}
 			</DialogTitle>
 			<DialogContent>
-				{select.context !== 'delete' && (
+				{context !== 'delete' && (
 					<Grid container spacing={3} marginTop={1}>
 						<Grid item xs={12}>
 							<TextField
@@ -153,7 +179,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 					</Grid>
 				)}
 
-				{select.context === 'delete' && (
+				{context === 'delete' && (
 					<DialogContentText id="alert-dialog-description">
 						Tem certeza que deseja remover a transação, essa ação é
 						irreversível
@@ -161,10 +187,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 				)}
 			</DialogContent>
 			<DialogActions>
-				<Button
-					variant="outlined"
-					onClick={() => dispatch(hideModal())}
-				>
+				<Button variant="outlined" onClick={() => setOpen(false)}>
 					Cancelar
 				</Button>
 				<Button variant="contained" onClick={handleConfirm} autoFocus>

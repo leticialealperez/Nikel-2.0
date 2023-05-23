@@ -1,7 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
 import loadingSlice from './Loading/loadingSlice';
-import modalSlice from './ModalTransaction/';
 import transactionsSlice from './Transactions/transactionsSlice';
 import usersSlice from './Users/usersSlice';
 
@@ -11,7 +10,7 @@ const rootReducer = combineReducers({
 	// valor - reducer/manager deste estado global
 	users: usersSlice,
 	loading: loadingSlice,
-	modal: modalSlice,
+	// modal: modalSlice,
 	transactions: transactionsSlice,
 });
 

@@ -1,9 +1,7 @@
 import { Delete, Edit } from '@mui/icons-material';
 import { Grid, IconButton, Stack, Typography } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { showModal } from '../../store/modules/ModalTransaction';
 import TransactionsModel from '../../store/types/Transactions';
 import { ModalTransaction } from '../ModalTransactions';
 
@@ -12,8 +10,9 @@ interface ItemTransactionProps {
 }
 
 const ItemTransaction: React.FC<ItemTransactionProps> = ({ transaction }) => {
-	const modal = useAppSelector((state) => state.modal);
-	const dispatch = useAppDispatch();
+	const [open, setOpen] = useState(false);
+	const [deleta, setDeleta] = useState(false);
+	const [update, setUpdate] = useState(false);
 
 	return (
 		<>
@@ -38,23 +37,34 @@ const ItemTransaction: React.FC<ItemTransactionProps> = ({ transaction }) => {
 						<IconButton
 							color="error"
 							aria-label="delete"
-							onClick={() => dispatch(showModal('delete'))}
+							onClick={() => {
+								setOpen(true);
+								setUpdate(false);
+								setDeleta(true);
+							}}
 						>
 							<Delete />
 						</IconButton>
 						<IconButton
 							color="success"
 							aria-label="edit"
-							onClick={() => dispatch(showModal('update'))}
+							onClick={() => {
+								setOpen(true);
+								setUpdate(true);
+								setDeleta(false);
+							}}
 						>
 							<Edit />
 						</IconButton>
 					</Stack>
 				</Grid>
 			</Grid>
-			{modal.context !== 'create' && (
-				<ModalTransaction transactionSelected={transaction} />
-			)}
+			<ModalTransaction
+				context={update ? 'update' : 'delete'}
+				open={open}
+				setOpen={setOpen}
+				transactionSelected={transaction}
+			/>
 		</>
 	);
 };
