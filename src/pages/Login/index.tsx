@@ -1,5 +1,8 @@
 import { Container, Grid } from '@mui/material';
+import { useEffect } from 'react';
 
+import { useAppDispatch } from '../../store/hooks';
+import { getAllUsers } from '../../store/modules/Users/usersSlice';
 import { FormLogin } from './components/FormLogin';
 import { LoginImage } from './components/LoginImage';
 import LoginPhrases from './components/LoginPhrases';
@@ -16,6 +19,12 @@ export const Login = () => {
 		{ phrase: 'Controle seu dinheiro e investimentos.' },
 		{ phrase: 'Economize e atinja seus objetivos.' },
 	];
+
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		dispatch(getAllUsers());
+	}, []);
 
 	return (
 		<Container sx={{ height: '100vh' }}>

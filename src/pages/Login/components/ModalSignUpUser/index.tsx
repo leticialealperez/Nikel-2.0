@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import React, { useEffect, useState } from 'react';
 
 import { useAppDispatch } from '../../../../store/hooks';
-import { adicionarUsuario } from '../../../../store/modules/Users/usersSlice';
+import { createUser } from '../../../../store/modules/Users/usersSlice';
 import { emailRegex } from '../../../../utils/validators/regexData';
 import { IsValidCredentials } from '../../types/IsValidCredentials';
 
@@ -83,7 +83,7 @@ const ModalSignupUser: React.FC<ModalSignupUserProps> = ({
 
 		// cadastrar um usuario no ESTADO GLOBAL
 		dispatch(
-			adicionarUsuario({
+			createUser({
 				email: emailCadastro,
 				senha: senhaCadastro,
 			}),
