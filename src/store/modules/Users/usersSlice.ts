@@ -60,6 +60,20 @@ export const createUser = createAsyncThunk(
 	},
 );
 
+export const loginUser = createAsyncThunk(
+	'users/login',
+	async(usuario: User)=>{
+		try{
+			const response = await axios.post(
+				'http://localhost:8080/usuarios/login', usuario)
+
+			return response.data
+		}catch(erro: any){
+			console.log(erro)
+			return erro.response.data
+		}
+	}
+)
 /*
 
 {
@@ -112,6 +126,26 @@ const usersSlice = createSlice({
 			state.mensagem = action.payload.mensagem;
 		});
 		builder.addCase(createUser.rejected, (state) => {
+			state.loading = false;
+			state.mensagem = 'Deu ruim na requisição!';
+		});
+
+		// GERENCIAMENTO DOS STATUS DE LOGIN DE USUARIO - POST
+		builder.addCase(loginUser.pending, (state) => {
+			state.loading = true;
+			state.mensagem = 'Tá carregando, segura aí!';
+		});
+		builder.addCase(loginUser.fulfilled, (state, action) => {
+			state.loading = true;
+			state.mensagem = 'Tá carregando, segura aí!';
+
+			if (action.payload.usuarioAutorizado) {
+				sessionStorage.setItem('userLogged', JSON.stringify(action.payload.usuarioAutorizado))
+			}
+
+			state.mensagem = action.payload.mensagem;
+		});
+		builder.addCase(loginUser.rejected, (state) => {
 			state.loading = false;
 			state.mensagem = 'Deu ruim na requisição!';
 		});

@@ -1,9 +1,10 @@
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
 import { Divider, Grid, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useAppSelector } from '../../store/hooks';
-import { listAllTransactions } from '../../store/modules/Transactions/transactionsSlice';
+import { useAppDispatch } from '../../store/hooks';
+import { getTransaction, listAllTransactions } from '../../store/modules/Transactions/transactionsSlice';
 import ItemTransaction from '../ItemTransaction';
 
 interface ColumnTransactionProps {
@@ -11,12 +12,18 @@ interface ColumnTransactionProps {
 }
 
 const ColumnTransaction: React.FC<ColumnTransactionProps> = ({ type }) => {
+	const dispatch = useAppDispatch()
+	const listaDeTransacoes = useAppSelector(listAllTransactions);
+	
 	const [userLogged, setUserLogged] = useState(
 		(sessionStorage.getItem('userLogged') ??
 			localStorage.getItem('userLogged')) as string,
 	);
 
-	const listaDeTransacoes = useAppSelector(listAllTransactions);
+	useEffect(()=>{
+		dispatch(getTransaction(userLogged))
+	}, [])
+
 
 	return (
 		<Grid item xs={6} padding={2}>

@@ -60,8 +60,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 					createdBy: (sessionStorage.getItem('userLogged') ??
 						localStorage.getItem('userLogged')) as string,
 				};
-
-				dispatch(createTransaction(newTransaction));
+				
 				clearInputs();
 				setOpen(false);
 				console.log('criar');
@@ -85,7 +84,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 				break;
 			case 'delete':
 				if (transactionSelected) {
-					dispatch(deleteTransaction(transactionSelected.id));
+					
 				}
 				console.log('deletar');
 				break;
@@ -192,7 +191,19 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 				<Button variant="outlined" onClick={() => setOpen(false)}>
 					Cancelar
 				</Button>
-				<Button variant="contained" onClick={handleConfirm} autoFocus>
+				<Button variant="contained" onClick={()=> {
+					const newTransaction: TransactionsModel = {
+						id: gerarId(),
+						value: Number(valor),
+						createdAt: data,
+						description: desc,
+						type: tipo as 'income' | 'outcome',
+						createdBy: (sessionStorage.getItem('userLogged') ??
+							localStorage.getItem('userLogged')) as string,
+					};
+					
+					dispatch(createTransaction(newTransaction))}
+					} autoFocus>
 					Concluir
 				</Button>
 			</DialogActions>
