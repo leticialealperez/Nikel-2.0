@@ -24,7 +24,10 @@ import {
 	hideLoading,
 	showLoading,
 } from '../../../../store/modules/Loading/loadingSlice';
-import { buscarUsuarios, getAllUsers, loginUser } from '../../../../store/modules/Users/usersSlice';
+import {
+	buscarUsuarios,
+	loginUser,
+} from '../../../../store/modules/Users/usersSlice';
 import { emailRegex } from '../../../../utils/validators/regexData';
 import { IsValidCredentials } from '../../types/IsValidCredentials';
 import ModalSignupUser from '../ModalSignUpUser';
@@ -126,7 +129,7 @@ export const FormLogin = () => {
 			: sessionStorage.setItem('userLogged', user.email);
 
 		dispatch(showLoading());
-		dispatch(loginUser(user))
+		dispatch(loginUser(user));
 		setTimeout(() => {
 			dispatch(hideLoading());
 			navigate('/home');
@@ -188,7 +191,6 @@ export const FormLogin = () => {
 								},
 							}}
 							size="large"
-							
 						>
 							Entrar
 						</Button>

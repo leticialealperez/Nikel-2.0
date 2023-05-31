@@ -85,7 +85,7 @@ const ModalSignupUser: React.FC<ModalSignupUserProps> = ({
 		dispatch(
 			createUser({
 				email: emailCadastro,
-				senha: senhaCadastro,
+				password: senhaCadastro,
 			}),
 		);
 
