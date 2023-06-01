@@ -10,6 +10,7 @@ import {
 	hideLoading,
 	showLoading,
 } from '../../store/modules/Loading/loadingSlice';
+import { hideNotification } from '../../store/modules/Notification/notificationSlice';
 import Loading from '../Loading';
 
 import NikelSmall from '/assets/images/nikel-small-logo.png';
@@ -28,6 +29,7 @@ const MyAppBar: React.FC<MyAppBarProps> = ({ context }) => {
 
 		dispatch(showLoading());
 		setTimeout(() => {
+			dispatch(hideNotification());
 			dispatch(hideLoading());
 			navigate('/');
 		}, 3000);

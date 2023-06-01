@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import MyAppBar from '../../shared-components/AppBar';
 import Card from '../../shared-components/CardTransactions';
 import { Section } from '../../shared-components/Section';
+import { SnackBarComp } from '../../shared-components/SnackBar';
 
 const Home = () => {
 	const navigate = useNavigate();
@@ -32,6 +33,7 @@ const Home = () => {
 				<Section context="home" />
 				<Card />
 			</Box>
+			<SnackBarComp />
 		</>
 	);
 };

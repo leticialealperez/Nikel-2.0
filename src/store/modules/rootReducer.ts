@@ -1,6 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
 import loadingSlice from './Loading/loadingSlice';
+import notificationSlice from './Notification/notificationSlice';
 import transactionsSlice from './Transactions/transactionsSlice';
 import usersSlice from './Users/usersSlice';
 
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
 	loading: loadingSlice,
 	// modal: modalSlice,
 	transactions: transactionsSlice,
+	notification: notificationSlice,
 });
 
 export default rootReducer;

@@ -1,10 +1,12 @@
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
 import { Divider, Grid, Typography } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { useAppSelector } from '../../store/hooks';
-import { useAppDispatch } from '../../store/hooks';
-import { getTransaction, listAllTransactions } from '../../store/modules/Transactions/transactionsSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import {
+	getTransaction,
+	listAllTransactions,
+} from '../../store/modules/Transactions/transactionsSlice';
 import ItemTransaction from '../ItemTransaction';
 
 interface ColumnTransactionProps {
@@ -12,18 +14,17 @@ interface ColumnTransactionProps {
 }
 
 const ColumnTransaction: React.FC<ColumnTransactionProps> = ({ type }) => {
-	const dispatch = useAppDispatch()
+	const dispatch = useAppDispatch();
 	const listaDeTransacoes = useAppSelector(listAllTransactions);
-	
+
 	const [userLogged, setUserLogged] = useState(
 		(sessionStorage.getItem('userLogged') ??
 			localStorage.getItem('userLogged')) as string,
 	);
 
-	useEffect(()=>{
-		dispatch(getTransaction(userLogged))
-	}, [])
-
+	useEffect(() => {
+		dispatch(getTransaction(JSON.parse(userLogged)));
+	}, []);
 
 	return (
 		<Grid item xs={6} padding={2}>
@@ -43,7 +44,7 @@ const ColumnTransaction: React.FC<ColumnTransactionProps> = ({ type }) => {
 			{listaDeTransacoes
 				.filter(
 					(transaction) =>
-						transaction.createdBy === userLogged &&
+						transaction.createdBy === JSON.parse(userLogged) &&
 						transaction.type === type,
 				)
 				.map((transaction, index) =>

@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import { RootState } from '../..';
 import TransactionsModel from '../../types/Transactions';
+import { showNotification } from '../Notification/notificationSlice';
 
 const transactionsAdapter = createEntityAdapter<TransactionsModel>({
 	selectId: (state) => state.id,
@@ -14,15 +15,36 @@ const transactionsAdapter = createEntityAdapter<TransactionsModel>({
 
 export const createTransaction = createAsyncThunk(
 	'transactions/createTransaction',
-	async (transaction: TransactionsModel) => {
+	async (transaction: Omit<TransactionsModel, 'id'>, { dispatch }) => {
+		const { createdBy, description, type, value, createdAt } = transaction;
+		console.log(createdBy);
 		try {
 			const response = await axios.post(
-				`http://localhost:8080/usuarios/${transaction.createdBy}/transacoes/criar`,
-				transaction,
+				`http://localhost:8080/usuarios/${createdBy}/transacoes/criar`,
+				{
+					description,
+					type,
+					value,
+					createdAt,
+				},
 			);
-			return response.data;
+
+			dispatch(
+				showNotification({
+					message: response.data.mensagem,
+					success: true,
+				}),
+			);
+
+			return response.data; // {  mensagem: "", dados: { ...novaTransação } }
 		} catch (error: any) {
-			return error.response.data;
+			dispatch(
+				showNotification({
+					message: error.response.data.mensagem,
+					success: true,
+				}),
+			);
+			return error.response.data; // {  mensagem: "" }
 		}
 	},
 );
@@ -48,13 +70,26 @@ interface DeleteType {
 
 export const deleteTransaction = createAsyncThunk(
 	'transactions/deleteTransaction',
-	async (deleteParam: DeleteType) => {
+	async (deleteParam: DeleteType, { dispatch }) => {
 		try {
 			const response = await axios.delete(
 				`http://localhost:8080/usuarios/${deleteParam.email}/transacoes/deletar/${deleteParam.idTransaction}`,
 			);
+
+			dispatch(
+				showNotification({
+					message: response.data.mensagem,
+					success: true,
+				}),
+			);
 			return response.data;
 		} catch (error: any) {
+			dispatch(
+				showNotification({
+					message: error.response.data.mensagem,
+					success: false,
+				}),
+			);
 			return error.response.data;
 		}
 	},
@@ -70,19 +105,21 @@ const transactionsSlice = createSlice({
 		updateTransaction: transactionsAdapter.updateOne,
 	},
 	extraReducers: (builder) => {
-		builder.addCase(createTransaction.fulfilled, (state, action) => {
+		builder.addCase(createTransaction.pending, (state, action) => {
 			state.loading = true;
 			state.mensagem = 'Tá carregando, segura aí!';
+		});
+		builder.addCase(createTransaction.fulfilled, (state, action) => {
+			// OU A API RETORNOU 400...500 - DEU ERRO NO CADASTRO NA API
+
+			// OU API RETORNOU 200...299 - DEU CERTO O CADASTRO NA API
+			state.loading = false;
 
 			if (action.payload.dados) {
 				transactionsAdapter.addOne(state, action.payload.dados);
 			}
 
 			state.mensagem = action.payload.mensagem; // 'Transação cadastrada com sucesso!'
-		});
-		builder.addCase(createTransaction.pending, (state, action) => {
-			state.loading = true;
-			state.mensagem = 'Tá carregando, segura aí!';
 		});
 		builder.addCase(createTransaction.rejected, (state, action) => {
 			// Erro no servidor
@@ -105,15 +142,23 @@ const transactionsSlice = createSlice({
 			state.mensagem = 'Deu ruim na requisição';
 		});
 
-		builder.addCase(deleteTransaction.fulfilled, (state, action) => {
-			(state.loading = false), (state.mensagem = action.payload.mensagem);
-
-			// não consegui passar - travamos no removeOne! :)
-			// transactionsAdapter.removeOne(state, )
-		});
 		builder.addCase(deleteTransaction.pending, (state) => {
 			state.loading = true;
 			state.mensagem = 'Tá carregando, segura aí!';
+		});
+		builder.addCase(deleteTransaction.fulfilled, (state, action) => {
+			state.loading = false;
+			state.mensagem = action.payload.mensagem;
+
+			// não consegui passar - travamos no removeOne! :)
+			// transactionsAdapter.removeOne(state, )
+
+			if (action.payload.itemRemovido) {
+				transactionsAdapter.removeOne(
+					state,
+					action.payload.itemRemovido.id,
+				);
+			}
 		});
 		builder.addCase(deleteTransaction.rejected, (state) => {
 			// Erro no servidor

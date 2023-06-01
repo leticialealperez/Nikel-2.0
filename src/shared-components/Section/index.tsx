@@ -20,7 +20,7 @@ export const Section: React.FC<SectionProps> = ({ context }) => {
 
 	const total = useMemo(() => {
 		return select.reduce((prev, curr) => {
-			if (curr.createdBy === userLogged) {
+			if (curr.createdBy === JSON.parse(userLogged)) {
 				if (curr.type === 'income') {
 					return prev + curr.value;
 				} else {

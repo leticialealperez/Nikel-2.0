@@ -14,13 +14,11 @@ import {
 	TextField,
 } from '@mui/material';
 import { SetStateAction, useEffect, useState } from 'react';
-import { v4 as gerarId } from 'uuid';
 
 import { useAppDispatch } from '../../store/hooks';
 import {
 	createTransaction,
 	deleteTransaction,
-	updateTransaction,
 } from '../../store/modules/Transactions/transactionsSlice';
 import TransactionsModel from '../../store/types/Transactions';
 
@@ -51,16 +49,19 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 	const handleConfirm = () => {
 		switch (context) {
 			case 'create':
-				const newTransaction: TransactionsModel = {
-					id: gerarId(),
+				const newTransaction: Omit<TransactionsModel, 'id'> = {
 					value: Number(valor),
 					createdAt: data,
 					description: desc,
 					type: tipo as 'income' | 'outcome',
-					createdBy: (sessionStorage.getItem('userLogged') ??
-						localStorage.getItem('userLogged')) as string,
+					createdBy: JSON.parse(
+						(sessionStorage.getItem('userLogged') ??
+							localStorage.getItem('userLogged')) as string,
+					),
 				};
-				
+
+				dispatch(createTransaction(newTransaction));
+
 				clearInputs();
 				setOpen(false);
 				console.log('criar');
@@ -68,23 +69,33 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 
 			case 'update':
 				if (transactionSelected) {
-					dispatch(
-						updateTransaction({
-							id: transactionSelected.id,
-							changes: {
-								value: +valor, //mágica === Number(x)
-								description: desc,
-								createdAt: data,
-								type: tipo,
-							},
-						}),
-					);
+					// dispatch(
+					// 	updateTransaction({
+					// 		id: transactionSelected.id,
+					// 		changes: {
+					// 			value: +valor, //mágica === Number(x)
+					// 			description: desc,
+					// 			createdAt: data,
+					// 			type: tipo,
+					// 		},
+					// 	}),
+					// );
 				}
 
 				break;
 			case 'delete':
 				if (transactionSelected) {
-					
+					dispatch(
+						deleteTransaction({
+							email: JSON.parse(
+								(sessionStorage.getItem('userLogged') ??
+									localStorage.getItem(
+										'userLogged',
+									)) as string,
+							),
+							idTransaction: transactionSelected.id,
+						}),
+					);
 				}
 				console.log('deletar');
 				break;
@@ -191,19 +202,7 @@ export const ModalTransaction: React.FC<ModalTransactionsProps> = ({
 				<Button variant="outlined" onClick={() => setOpen(false)}>
 					Cancelar
 				</Button>
-				<Button variant="contained" onClick={()=> {
-					const newTransaction: TransactionsModel = {
-						id: gerarId(),
-						value: Number(valor),
-						createdAt: data,
-						description: desc,
-						type: tipo as 'income' | 'outcome',
-						createdBy: (sessionStorage.getItem('userLogged') ??
-							localStorage.getItem('userLogged')) as string,
-					};
-					
-					dispatch(createTransaction(newTransaction))}
-					} autoFocus>
+				<Button variant="contained" onClick={handleConfirm} autoFocus>
 					Concluir
 				</Button>
 			</DialogActions>

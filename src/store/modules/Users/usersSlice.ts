@@ -14,6 +14,7 @@ import axios from 'axios';
 
 import { RootState } from '../..';
 import { User } from '../../types/User';
+import { showNotification } from '../Notification/notificationSlice';
 
 const usersAdapter = createEntityAdapter<User>({
 	selectId: (estado) => estado.email,
@@ -45,16 +46,31 @@ export const getAllUsers = createAsyncThunk('users/getAllUsers', async () => {
 // detalhe - um asyncthunk só recebe um parametro do componente
 export const createUser = createAsyncThunk(
 	'users/createUser',
-	async (novoUsuario: User) => {
+	async (novoUsuario: User, { dispatch }) => {
 		try {
 			const response = await axios.post(
 				'http://localhost:8080/usuarios/cadastro',
-				novoUsuario,
+				{
+					email: novoUsuario.email,
+					senha: novoUsuario.password,
+				},
+			);
+
+			dispatch(
+				showNotification({
+					message: response.data.mensagem,
+					success: true,
+				}),
 			);
 
 			return response.data;
 		} catch (erro: any) {
-			console.log(erro);
+			dispatch(
+				showNotification({
+					message: erro.response.data.mensagem,
+					success: false,
+				}),
+			);
 			return erro.response.data;
 		}
 	},
@@ -62,18 +78,42 @@ export const createUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
 	'users/login',
-	async(usuario: User)=>{
-		try{
+	async (infoLogin: User & { isLogged: boolean }, { dispatch }) => {
+		try {
 			const response = await axios.post(
-				'http://localhost:8080/usuarios/login', usuario)
+				'http://localhost:8080/usuarios/login',
+				{
+					email: infoLogin.email,
+					senha: infoLogin.password,
+				},
+			);
 
-			return response.data
-		}catch(erro: any){
-			console.log(erro)
-			return erro.response.data
+			dispatch(
+				showNotification({
+					message: response.data.mensagem,
+					success: true,
+				}),
+			);
+
+			return {
+				...response.data,
+				isLogged: infoLogin.isLogged,
+			};
+		} catch (erro: any) {
+			console.log(erro);
+			dispatch(
+				showNotification({
+					message: erro.response.data.mensagem,
+					success: false,
+				}),
+			);
+			return {
+				...erro.response.data,
+				isLogged: infoLogin.isLogged,
+			};
 		}
-	}
-)
+	},
+);
 /*
 
 {
@@ -136,14 +176,22 @@ const usersSlice = createSlice({
 			state.mensagem = 'Tá carregando, segura aí!';
 		});
 		builder.addCase(loginUser.fulfilled, (state, action) => {
-			state.loading = true;
-			state.mensagem = 'Tá carregando, segura aí!';
+			state.loading = false;
+			state.mensagem = action.payload.mensagem;
 
 			if (action.payload.usuarioAutorizado) {
-				sessionStorage.setItem('userLogged', JSON.stringify(action.payload.usuarioAutorizado))
+				if (action.payload.isLogged) {
+					localStorage.setItem(
+						'userLogged',
+						JSON.stringify(action.payload.usuarioAutorizado),
+					);
+				} else {
+					sessionStorage.setItem(
+						'userLogged',
+						JSON.stringify(action.payload.usuarioAutorizado),
+					);
+				}
 			}
-
-			state.mensagem = action.payload.mensagem;
 		});
 		builder.addCase(loginUser.rejected, (state) => {
 			state.loading = false;

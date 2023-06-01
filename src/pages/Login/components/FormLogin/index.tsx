@@ -19,15 +19,12 @@ interface UserProps {
 
 import Loading from '../../../../shared-components/Loading';
 import { SnackBarComp } from '../../../../shared-components/SnackBar';
-import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { useAppDispatch } from '../../../../store/hooks';
 import {
 	hideLoading,
 	showLoading,
 } from '../../../../store/modules/Loading/loadingSlice';
-import {
-	buscarUsuarios,
-	loginUser,
-} from '../../../../store/modules/Users/usersSlice';
+import { loginUser } from '../../../../store/modules/Users/usersSlice';
 import { emailRegex } from '../../../../utils/validators/regexData';
 import { IsValidCredentials } from '../../types/IsValidCredentials';
 import ModalSignupUser from '../ModalSignUpUser';
@@ -43,13 +40,9 @@ export const FormLogin = () => {
 		isValid: false,
 	});
 
-	const [isError, setIsError] = useState<boolean>(false);
-	const [message, setMessage] = useState<string>('');
-
 	// useAppSelector - buscar uma determinada propriedade/estado Global
 
 	const navigate = useNavigate();
-	const select = useAppSelector(buscarUsuarios);
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
@@ -83,53 +76,14 @@ export const FormLogin = () => {
 		setIsLogged(checked);
 	};
 
-	const verifySnack = (emailIsValid: boolean, passwordIsValid: boolean) => {
-		if (emailIsValid === false) {
-			setMessage('Erro ao tentar logar.');
-			setIsError(!emailIsValid);
-			return;
-		}
-
-		if (passwordIsValid === false) {
-			setMessage('Erro ao tentar logar.');
-			setIsError(!passwordIsValid);
-			return;
-		}
-	};
-
-	// função que controla o fechamento do snackbar
-	const handleClose = (
-		event: React.SyntheticEvent | Event,
-		reason?: string,
-	) => {
-		if (reason === 'clickaway') {
-			return;
-		}
-
-		setIsError(false);
-	};
-
 	// função que controla a abertura do Modal - dispara ao clique do link de cadastrar conta
 	const handleClickOpen = () => {
 		setIsOpen(true);
 	};
 
 	const verifyUserExists = () => {
-		const user = select.find((user) => {
-			return user.email === email && user.password === password;
-		});
-
-		if (!user) {
-			alert('Alguma coisa está errada');
-			return;
-		}
-
-		isLogged
-			? localStorage.setItem('userLogged', user.email)
-			: sessionStorage.setItem('userLogged', user.email);
-
 		dispatch(showLoading());
-		dispatch(loginUser(user));
+		dispatch(loginUser({ email, password, isLogged }));
 		setTimeout(() => {
 			dispatch(hideLoading());
 			navigate('/home');
@@ -212,15 +166,11 @@ export const FormLogin = () => {
 						</Typography>
 					</Grid>
 				</Grid>
-				<SnackBarComp
-					handleClose={handleClose}
-					message={message}
-					isError={isError}
-				/>
 			</Box>
 
 			<ModalSignupUser aberto={isOpen} mudarAberto={setIsOpen} />
 			<Loading />
+			<SnackBarComp />
 		</>
 	);
 };
